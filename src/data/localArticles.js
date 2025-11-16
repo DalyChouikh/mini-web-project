@@ -1,6 +1,6 @@
 export const localArticles = [
   {
-    id: "local-1",
+    id: "1",
     title: "Designing a Minimalist Study Desk",
     summary:
       "A clear, simple desk can help you focus longer and feel less stressed.",
@@ -10,10 +10,11 @@ export const localArticles = [
     date: "2025-10-20T09:00:00.000Z",
     readTime: 5,
     author: "Daly Ch.",
-    imageUrl: "https://loremflickr.com/800/600/minimalist,desk?lock=1",
+    imageUrl:
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=600&fit=crop",
   },
   {
-    id: "local-2",
+    id: "2",
     title: "How to Take Smart Digital Notes",
     summary:
       "Stop rewriting your lectures and start building a useful knowledge base.",
@@ -23,6 +24,21 @@ export const localArticles = [
     date: "2025-10-25T14:30:00.000Z",
     readTime: 6,
     author: "Daly Ch.",
-    imageUrl: "https://loremflickr.com/800/600/laptop,notes?lock=2",
+    imageUrl:
+      "https://images.unsplash.com/photo-1516534775068-ba3e7458af70?w=800&h=600&fit=crop",
+  },
+  {
+    id: "3",
+    title: "Balancing Coding Projects and Exams",
+    summary:
+      "A simple system to keep learning to code without failing your classes.",
+    content:
+      "It is easy to spend all your energy on side projects and forget about exams, or the other way around. A practical approach is to split your week into focus blocks. Reserve specific evenings for coding projects and keep them protected, just like a class. On other days, commit to exam preparation only. When you work on a project, define one clear outcome for the session, such as implementing one feature or fixing two bugs. When you study, define one chapter or topic. This way you make progress in both areas without burning out.",
+    tags: ["coding", "university", "planning"],
+    date: "2025-11-01T11:15:00.000Z",
+    readTime: 7,
+    author: "Daly Ch.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop",
   },
 ];

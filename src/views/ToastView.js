@@ -1,41 +1,26 @@
 export class ToastView {
-  constructor(rootElement) {
-    this.rootElement = rootElement;
-    this.hideTimeoutId = null;
+  constructor(element) {
+    this.element = element;
+    this.timeout = null;
   }
 
-  show(message, type = "info", duration = 2600) {
-    if (!this.rootElement) {
-      return;
+  show(message, type = "info", duration = 3000) {
+    if (!this.element) return;
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
     }
-    this.rootElement.textContent = message;
-    this.rootElement.classList.remove(
-      "toast-info",
-      "toast-success",
-      "toast-error"
-    );
-    if (type === "success") {
-      this.rootElement.classList.add("toast-success");
-    } else if (type === "error") {
-      this.rootElement.classList.add("toast-error");
-    } else {
-      this.rootElement.classList.add("toast-info");
-    }
-    this.rootElement.hidden = false;
-    this.rootElement.classList.add("visible");
-    if (this.hideTimeoutId) {
-      window.clearTimeout(this.hideTimeoutId);
-    }
-    this.hideTimeoutId = window.setTimeout(() => {
+
+    this.element.textContent = message;
+    this.element.className = `toast visible ${type}`;
+
+    this.timeout = setTimeout(() => {
       this.hide();
     }, duration);
   }
 
   hide() {
-    if (!this.rootElement) {
-      return;
-    }
-    this.rootElement.classList.remove("visible");
-    this.rootElement.hidden = true;
+    if (!this.element) return;
+    this.element.classList.remove("visible");
   }
 }

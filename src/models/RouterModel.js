@@ -1,26 +1,28 @@
 export class RouterModel {
   constructor() {
-    this.route = { view: "list", articleId: null };
+    this.currentRoute = { view: "list", articleId: null };
   }
 
   parseHash(hash) {
-    if (!hash || hash === "#" || hash === "#/") {
+    const cleanHash = hash.replace(/^#\/?/, "");
+
+    if (!cleanHash) {
       return { view: "list", articleId: null };
     }
-    const value = hash.replace(/^#/, "");
-    const parts = value.split("/");
-    if (parts[0] === "article" && parts[1]) {
-      return { view: "detail", articleId: parts[1] };
+
+    const match = cleanHash.match(/^article\/(.+)$/);
+    if (match) {
+      return { view: "detail", articleId: match[1] };
     }
+
     return { view: "list", articleId: null };
   }
 
   getRoute() {
-    return { ...this.route };
+    return { ...this.currentRoute };
   }
 
   setRoute(view, articleId = null) {
-    this.route = { view, articleId };
-    return this.getRoute();
+    this.currentRoute = { view, articleId };
   }
 }

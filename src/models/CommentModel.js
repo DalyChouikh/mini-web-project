@@ -1,48 +1,52 @@
-const STORAGE_KEY = "mini-blog-comments";
+const STORAGE_KEY = "blog-comments";
 
 export class CommentModel {
   constructor() {
-    this.commentsByArticleId = {};
+    this.commentsByArticle = {};
     this.load();
   }
 
   load() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        this.commentsByArticleId = JSON.parse(raw);
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) {
+        this.commentsByArticle = JSON.parse(data);
       }
     } catch (error) {
-      this.commentsByArticleId = {};
+      this.commentsByArticle = {};
     }
   }
 
   save() {
     try {
-      const raw = JSON.stringify(this.commentsByArticleId);
-      localStorage.setItem(STORAGE_KEY, raw);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.commentsByArticle));
     } catch (error) {}
   }
 
   getComments(articleId) {
-    return this.commentsByArticleId[articleId] || [];
+    return this.commentsByArticle[articleId] || [];
   }
 
   addComment(articleId, { author, content }) {
     const trimmedAuthor = author.trim() || "Anonymous";
     const trimmedContent = content.trim();
+
     if (!trimmedContent) {
       return null;
     }
-    const list = this.commentsByArticleId[articleId] || [];
+
     const comment = {
-      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       author: trimmedAuthor,
       content: trimmedContent,
       createdAt: new Date().toISOString(),
     };
-    list.push(comment);
-    this.commentsByArticleId[articleId] = list;
+
+    if (!this.commentsByArticle[articleId]) {
+      this.commentsByArticle[articleId] = [];
+    }
+
+    this.commentsByArticle[articleId].push(comment);
     this.save();
     return comment;
   }

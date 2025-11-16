@@ -1,97 +1,71 @@
 export class ArticleListView {
-  constructor(rootElement) {
-    this.rootElement = rootElement;
-    this.listViewSection = document.getElementById("list-view");
+  constructor(container) {
+    this.container = container;
+    this.listSection = document.getElementById("list-view");
   }
 
   render(articles) {
-    if (!this.rootElement) {
-      return;
-    }
-    this.rootElement.innerHTML = "";
-    articles.forEach((article) => {
-      const card = document.createElement("article");
-      card.className = "article-card";
-      card.dataset.id = article.id;
+    if (!this.container) return;
 
-      const header = document.createElement("header");
-      header.className = "article-card-header";
-
-      const title = document.createElement("h2");
-      title.className = "article-card-title";
-      title.textContent = article.title;
-
-      const meta = document.createElement("div");
-      meta.className = "article-card-meta";
-      const time = document.createElement("time");
-      time.dateTime = article.date;
-      time.textContent = new Date(article.date).toLocaleDateString();
-      const readTime = document.createElement("span");
-      readTime.textContent = `${article.readTime} min read`;
-      meta.appendChild(time);
-      meta.appendChild(readTime);
-
-      header.appendChild(title);
-      header.appendChild(meta);
-
-      const summary = document.createElement("p");
-      summary.className = "article-card-summary";
-      summary.textContent = article.summary;
-
-      const footer = document.createElement("footer");
-      footer.className = "article-card-footer";
-
-      const tagsContainer = document.createElement("div");
-      tagsContainer.className = "article-card-tags";
-      (article.tags || []).forEach((tag) => {
-        const tagEl = document.createElement("span");
-        tagEl.className = "tag-pill";
-        tagEl.textContent = tag;
-        tagsContainer.appendChild(tagEl);
-      });
-
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "article-card-button";
-      button.textContent = "Read";
-
-      footer.appendChild(tagsContainer);
-      footer.appendChild(button);
-
-      card.appendChild(header);
-      card.appendChild(summary);
-      card.appendChild(footer);
-
-      this.rootElement.appendChild(card);
-    });
+    this.container.innerHTML = articles
+      .map(
+        (article) => `
+      <article class="article-card" data-id="${article.id}">
+        ${
+          article.imageUrl
+            ? `<img src="${article.imageUrl}" alt="" class="article-card-image" loading="lazy" />`
+            : ""
+        }
+        <div class="article-card-content">
+          <header class="article-card-header">
+            <h2 class="article-card-title">${article.title}</h2>
+            <div class="article-card-meta">
+              <time datetime="${article.date}">
+                ${new Date(article.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+              <span>•</span>
+              <span>${article.readTime} min read</span>
+            </div>
+          </header>
+          <p class="article-card-summary">${article.summary}</p>
+          <footer class="article-card-footer">
+            <div class="article-tags">
+              ${article.tags
+                .map((tag) => `<span class="tag">${tag}</span>`)
+                .join("")}
+            </div>
+            <button class="read-button">Read →</button>
+          </footer>
+        </div>
+      </article>
+    `
+      )
+      .join("");
   }
 
   bindArticleClick(handler) {
-    if (!this.rootElement) {
-      return;
-    }
-    this.rootElement.addEventListener("click", (event) => {
-      const target = event.target;
-      const card = target.closest("article.article-card");
-      if (!card) {
-        return;
-      }
-      const id = card.dataset.id;
-      if (id) {
-        handler(id);
+    if (!this.container) return;
+    this.container.addEventListener("click", (e) => {
+      const card = e.target.closest(".article-card");
+      if (card) {
+        handler(card.dataset.id);
       }
     });
   }
 
   show() {
-    if (this.listViewSection) {
-      this.listViewSection.hidden = false;
+    if (this.listSection) {
+      this.listSection.hidden = false;
     }
   }
 
   hide() {
-    if (this.listViewSection) {
-      this.listViewSection.hidden = true;
+    if (this.listSection) {
+      this.listSection.hidden = true;
     }
   }
 }

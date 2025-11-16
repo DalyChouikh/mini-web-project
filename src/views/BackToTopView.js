@@ -1,26 +1,22 @@
 export class BackToTopView {
-  constructor(buttonElement) {
-    this.buttonElement = buttonElement;
+  constructor(button) {
+    this.button = button;
   }
 
   bindClick(handler) {
-    if (!this.buttonElement) {
-      return;
-    }
-    this.buttonElement.addEventListener("click", () => {
-      handler();
-    });
+    if (!this.button) return;
+    this.button.addEventListener("click", handler);
   }
 
   show() {
-    if (this.buttonElement) {
-      this.buttonElement.classList.add("visible");
+    if (this.button) {
+      this.button.classList.add("visible");
     }
   }
 
   hide() {
-    if (this.buttonElement) {
-      this.buttonElement.classList.remove("visible");
+    if (this.button) {
+      this.button.classList.remove("visible");
     }
   }
 }

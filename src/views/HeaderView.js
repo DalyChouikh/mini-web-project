@@ -1,31 +1,24 @@
 export class HeaderView {
-  constructor(searchInput, themeToggleButton) {
+  constructor(searchInput, themeToggle) {
     this.searchInput = searchInput;
-    this.themeToggleButton = themeToggleButton;
+    this.themeToggle = themeToggle;
+    this.themeIcon = themeToggle?.querySelector(".theme-icon");
   }
 
   bindSearch(handler) {
-    if (!this.searchInput) {
-      return;
-    }
-    this.searchInput.addEventListener("input", (event) => {
-      handler(event.target.value || "");
+    if (!this.searchInput) return;
+    this.searchInput.addEventListener("input", (e) => {
+      handler(e.target.value);
     });
   }
 
   bindThemeToggle(handler) {
-    if (!this.themeToggleButton) {
-      return;
-    }
-    this.themeToggleButton.addEventListener("click", () => {
-      handler();
-    });
+    if (!this.themeToggle) return;
+    this.themeToggle.addEventListener("click", handler);
   }
 
   updateThemeIcon(theme) {
-    if (!this.themeToggleButton) {
-      return;
-    }
-    this.themeToggleButton.textContent = theme === "dark" ? "☾" : "☀";
+    if (!this.themeIcon) return;
+    this.themeIcon.textContent = theme === "dark" ? "🌙" : "☀️";
   }
 }

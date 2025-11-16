@@ -1,12 +1,11 @@
-const BASE_URL = "https://691a3adc2d8d7855756e387c.mockapi.io/api/v1/articles";
+const API_URL = "https://691a3adc2d8d7855756e387c.mockapi.io/api/v1/articles";
 
 export class ApiClient {
   async fetchArticles() {
-    const response = await fetch(BASE_URL);
+    const response = await fetch(API_URL);
     if (!response.ok) {
-      throw new Error("Failed to fetch articles");
+      throw new Error(`API error: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    return await response.json();
   }
 }

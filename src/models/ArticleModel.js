@@ -6,14 +6,14 @@ export class ArticleModel {
 
   async loadFromApi() {
     if (!this.apiClient) {
-      return { ok: false };
+      return { success: false };
     }
     try {
       const rawArticles = await this.apiClient.fetchArticles();
       this.articles = rawArticles.map((item) => this.mapFromApi(item));
-      return { ok: true };
+      return { success: true };
     } catch (error) {
-      return { ok: false };
+      return { success: false, error };
     }
   }
 
@@ -26,30 +26,37 @@ export class ArticleModel {
   }
 
   getById(id) {
-    return this.articles.find((article) => article.id === id) || null;
+    return this.articles.find((article) => article.id === String(id)) || null;
   }
 
   search(query) {
-    const value = query.trim().toLowerCase();
-    if (!value) {
+    const term = query.trim().toLowerCase();
+    if (!term) {
       return this.getAll();
     }
     return this.articles.filter((article) => {
-      const text = `${article.title} ${article.summary} ${article.content} ${(
-        article.tags || []
-      ).join(" ")}`.toLowerCase();
-      return text.includes(value);
+      const searchText = [
+        article.title,
+        article.summary,
+        article.content,
+        article.author,
+        ...(article.tags || []),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return searchText.includes(term);
     });
   }
 
   mapFromApi(item) {
-    const tagsString = item.tags || "";
-    const tags = Array.isArray(tagsString)
-      ? tagsString
-      : String(tagsString)
+    const tagsRaw = item.tags || "";
+    const tags = Array.isArray(tagsRaw)
+      ? tagsRaw
+      : String(tagsRaw)
           .split(",")
-          .map((tag) => tag.trim())
+          .map((t) => t.trim())
           .filter(Boolean);
+
     return {
       id: String(item.id),
       title: item.title || "Untitled",
@@ -58,19 +65,15 @@ export class ArticleModel {
       tags,
       date: this.normalizeDate(item.createdAt),
       readTime: typeof item.readTime === "number" ? item.readTime : 5,
-      author: item.author || "Unknown",
+      author: item.author || "Anonymous",
       imageUrl: item.imageUrl || "",
     };
   }
 
   normalizeDate(raw) {
-    if (!raw) {
-      return new Date().toISOString();
-    }
-    if (typeof raw === "number") {
-      const millis = raw < 10_000_000_000 ? raw * 1000 : raw;
-      return new Date(millis).toISOString();
-    }
-    return new Date(raw).toISOString();
+    if (!raw) return new Date().toISOString();
+    if (typeof raw === "string") return new Date(raw).toISOString();
+    const timestamp = raw < 10000000000 ? raw * 1000 : raw;
+    return new Date(timestamp).toISOString();
   }
 }

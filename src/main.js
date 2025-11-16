@@ -34,22 +34,34 @@ const headerView = new HeaderView(
 const articleListView = new ArticleListView(
   document.getElementById("article-list")
 );
+
 const articleDetailView = new ArticleDetailView(
   document.getElementById("article-detail"),
-  document.getElementById("back-to-list")
+  document.getElementById("back-button")
 );
+
 const commentView = new CommentView(
   document.getElementById("comments-section")
 );
+
 const scrollIndicatorView = new ScrollIndicatorView(
-  document.querySelector(".scroll-indicator-bar")
+  document.getElementById("scroll-indicator")
 );
+
 const backToTopView = new BackToTopView(document.getElementById("back-to-top"));
+
 const toastView = new ToastView(document.getElementById("toast"));
 
 const searchController = new SearchController(articleModel, articleListView);
-const commentController = new CommentController(commentModel, commentView);
+
+const commentController = new CommentController(
+  commentModel,
+  commentView,
+  toastView
+);
+
 const themeController = new ThemeController(themeModel, headerView);
+
 const routerController = new RouterController(
   routerModel,
   articleModel,
@@ -60,23 +72,22 @@ const routerController = new RouterController(
 
 const appController = new AppController({
   articleModel,
+  searchController,
   commentController,
   themeController,
-  searchController,
   routerController,
-  headerView,
   scrollIndicatorView,
   backToTopView,
   toastView,
   articleDetailView,
 });
 
-articleListView.bindArticleClick((id) => {
-  routerController.navigateToArticle(id);
-});
+headerView.bindSearch((query) => searchController.handleSearch(query));
 
-articleDetailView.bindBack(() => {
-  routerController.navigateToList();
-});
+articleListView.bindArticleClick((id) =>
+  routerController.navigateToArticle(id)
+);
+
+articleDetailView.bindBack(() => routerController.navigateToList());
 
 appController.init();

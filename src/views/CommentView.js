@@ -1,67 +1,87 @@
 export class CommentView {
-  constructor(rootElement) {
-    this.rootElement = rootElement;
+  constructor(container) {
+    this.container = container;
   }
 
-  renderComments(comments) {
-    if (!this.rootElement) {
-      return;
-    }
+  render(comments) {
+    if (!this.container) return;
 
-    const itemsHtml = comments
-      .map((comment) => {
-        const date = new Date(comment.createdAt);
-        const label = date.toLocaleString();
-        return `
-          <li class="comment-item">
-            <div class="comment-meta">
-              <span>${comment.author}</span>
-              <time datetime="${comment.createdAt}">${label}</time>
+    const commentsList =
+      comments.length > 0
+        ? `
+      <ul class="comments-list">
+        ${comments
+          .map(
+            (comment) => `
+          <li class="comment">
+            <div class="comment-header">
+              <span class="comment-author">${comment.author}</span>
+              <time class="comment-date" datetime="${comment.createdAt}">
+                ${new Date(comment.createdAt).toLocaleString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </time>
             </div>
-            <p class="comment-content">${comment.content}</p>
+            <p class="comment-body">${comment.content}</p>
           </li>
-        `;
-      })
-      .join("");
+        `
+          )
+          .join("")}
+      </ul>
+    `
+        : '<p style="color: var(--text-tertiary); font-size: 14px;">No comments yet. Be the first to share your thoughts!</p>';
 
-    this.rootElement.innerHTML = `
-      <h2 class="comments-header">Comments</h2>
-      <ul class="comment-list">${itemsHtml}</ul>
+    this.container.innerHTML = `
+      <h2 class="comments-header">Comments (${comments.length})</h2>
+      ${commentsList}
       <form class="comment-form">
-        <div class="comment-form-row">
-          <label for="comment-author">Name</label>
-          <input id="comment-author" class="comment-input" type="text" placeholder="Your name" />
+        <div class="form-group">
+          <label for="comment-name" class="form-label">Name</label>
+          <input
+            type="text"
+            id="comment-name"
+            class="form-input"
+            placeholder="Your name"
+            autocomplete="name"
+          />
         </div>
-        <div class="comment-form-row">
-          <label for="comment-content">Comment</label>
-          <textarea id="comment-content" class="comment-textarea" placeholder="Share your thoughts"></textarea>
+        <div class="form-group">
+          <label for="comment-text" class="form-label">Comment</label>
+          <textarea
+            id="comment-text"
+            class="form-textarea"
+            placeholder="Share your thoughts..."
+            required
+          ></textarea>
         </div>
-        <button type="submit" class="comment-submit">Post comment</button>
+        <button type="submit" class="form-submit">Post Comment</button>
       </form>
     `;
   }
 
   bindAddComment(handler) {
-    if (!this.rootElement) {
-      return;
-    }
-    const form = this.rootElement.querySelector(".comment-form");
-    if (!form) {
-      return;
-    }
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const authorInput = this.rootElement.querySelector("#comment-author");
-      const contentInput = this.rootElement.querySelector("#comment-content");
-      const author = authorInput ? authorInput.value : "";
-      const content = contentInput ? contentInput.value : "";
+    if (!this.container) return;
+
+    const form = this.container.querySelector(".comment-form");
+    if (!form) return;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const nameInput = form.querySelector("#comment-name");
+      const textInput = form.querySelector("#comment-text");
+
+      const author = nameInput?.value || "";
+      const content = textInput?.value || "";
+
       handler({ author, content });
-      if (authorInput) {
-        authorInput.value = "";
-      }
-      if (contentInput) {
-        contentInput.value = "";
-      }
+
+      if (nameInput) nameInput.value = "";
+      if (textInput) textInput.value = "";
     });
   }
 }

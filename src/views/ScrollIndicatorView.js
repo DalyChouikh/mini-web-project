@@ -1,13 +1,11 @@
 export class ScrollIndicatorView {
-  constructor(barElement) {
-    this.barElement = barElement;
+  constructor(element) {
+    this.element = element;
   }
 
   update(progress) {
-    if (!this.barElement) {
-      return;
-    }
+    if (!this.element) return;
     const clamped = Math.max(0, Math.min(1, progress));
-    this.barElement.style.width = `${clamped * 100}%`;
+    this.element.style.transform = `scaleX(${clamped})`;
   }
 }

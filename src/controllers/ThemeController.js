@@ -6,22 +6,22 @@ export class ThemeController {
   }
 
   init() {
-    const theme = this.themeModel.getTheme();
-    this.applyTheme(theme);
-    this.headerView.updateThemeIcon(theme);
+    this.currentTheme = this.themeModel.getTheme();
+    this.applyTheme(this.currentTheme);
+    this.headerView.updateThemeIcon(this.currentTheme);
   }
 
   bindToggle() {
     this.headerView.bindThemeToggle(() => {
-      const next = this.themeModel.toggleTheme(this.currentTheme);
-      this.applyTheme(next);
-      this.themeModel.setTheme(next);
-      this.headerView.updateThemeIcon(next);
+      const newTheme = this.themeModel.toggleTheme(this.currentTheme);
+      this.applyTheme(newTheme);
+      this.themeModel.setTheme(newTheme);
+      this.headerView.updateThemeIcon(newTheme);
+      this.currentTheme = newTheme;
     });
   }
 
   applyTheme(theme) {
-    this.currentTheme = theme;
     document.documentElement.setAttribute("data-theme", theme);
   }
 }

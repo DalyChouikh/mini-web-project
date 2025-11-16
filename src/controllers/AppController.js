@@ -1,63 +1,59 @@
 export class AppController {
-  constructor(options) {
-    this.articleModel = options.articleModel;
-    this.commentController = options.commentController;
-    this.themeController = options.themeController;
-    this.searchController = options.searchController;
-    this.routerController = options.routerController;
-    this.headerView = options.headerView;
-    this.scrollIndicatorView = options.scrollIndicatorView;
-    this.backToTopView = options.backToTopView;
-    this.toastView = options.toastView;
-    this.articleDetailView = options.articleDetailView;
+  constructor({
+    articleModel,
+    searchController,
+    commentController,
+    themeController,
+    routerController,
+    scrollIndicatorView,
+    backToTopView,
+    toastView,
+    articleDetailView,
+  }) {
+    this.articleModel = articleModel;
+    this.searchController = searchController;
+    this.commentController = commentController;
+    this.themeController = themeController;
+    this.routerController = routerController;
+    this.scrollIndicatorView = scrollIndicatorView;
+    this.backToTopView = backToTopView;
+    this.toastView = toastView;
+    this.articleDetailView = articleDetailView;
   }
 
   async init() {
     this.themeController.init();
     this.themeController.bindToggle();
 
-    this.headerView.bindSearch((query) => {
-      this.searchController.handleSearch(query);
-    });
-
-    this.commentController.setValidationHandler((message) => {
-      this.toastView.show(message, "error");
-    });
-
-    this.articleDetailView.bindShare((type) => {
-      this.handleShare(type);
-    });
-
-    this.bindScrollFeatures();
-
     const result = await this.articleModel.loadFromApi();
-    if (!result.ok) {
-      const articles = this.articleModel.getAll();
-      if (articles.length === 0) {
-        this.toastView.show(
-          "Using offline articles (API unavailable)",
-          "error"
-        );
+
+    if (!result.success) {
+      const hasLocalArticles = this.articleModel.getAll().length > 0;
+      if (hasLocalArticles) {
+        this.toastView.show("Using offline articles", "info");
       } else {
-        this.toastView.show("Loaded local articles (API unavailable)", "info");
+        this.toastView.show("Failed to load articles", "error");
       }
     }
 
-    const allArticles = this.articleModel.getAll();
     this.searchController.handleSearch("");
-
     this.routerController.init();
+    this.bindScrollFeatures();
+    this.bindShareActions();
   }
 
   bindScrollFeatures() {
     window.addEventListener("scroll", () => {
-      const scrollTop = window.scrollY || window.pageYOffset;
-      const doc = document.documentElement;
-      const docHeight = doc.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      const maxScroll = scrollHeight - clientHeight;
+
+      const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
       this.scrollIndicatorView.update(progress);
 
-      if (scrollTop > 200) {
+      if (scrollTop > 300) {
         this.backToTopView.show();
       } else {
         this.backToTopView.hide();
@@ -69,42 +65,26 @@ export class AppController {
     });
   }
 
-  async handleShare(type) {
-    const routeHash = window.location.hash;
-    if (!routeHash.startsWith("#article/")) {
-      this.toastView.show("Open an article before sharing.", "info");
-      return;
-    }
-    const articleId = routeHash.replace("#article/", "");
-    const url = `${window.location.origin}${window.location.pathname}#article/${articleId}`;
+  bindShareActions() {
+    this.articleDetailView.bindShare(async (action) => {
+      const hash = window.location.hash;
+      if (!hash.startsWith("#article/")) return;
 
-    if (type === "copy") {
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
+      const articleId = hash.replace("#article/", "");
+      const url = `${window.location.origin}${window.location.pathname}#article/${articleId}`;
+
+      if (action === "copy") {
+        try {
           await navigator.clipboard.writeText(url);
-          this.toastView.show("Link copied to clipboard", "success");
-        } else {
-          this.toastView.show(
-            "Clipboard not available in this browser.",
-            "info"
-          );
+          this.toastView.show("Link copied to clipboard!", "success");
+        } catch (error) {
+          this.toastView.show("Failed to copy link", "error");
         }
-      } catch (error) {
-        this.toastView.show("Unable to copy link.", "error");
+      } else if (action === "twitter") {
+        this.toastView.show("Shared to Twitter (simulation)", "info");
+      } else if (action === "linkedin") {
+        this.toastView.show("Shared to LinkedIn (simulation)", "info");
       }
-      return;
-    }
-
-    if (type === "twitter") {
-      this.toastView.show("Shared to Twitter (simulation)", "info");
-      return;
-    }
-
-    if (type === "linkedin") {
-      this.toastView.show("Shared to LinkedIn (simulation)", "info");
-      return;
-    }
-
-    this.toastView.show("Sharing action (simulation)", "info");
+    });
   }
 }

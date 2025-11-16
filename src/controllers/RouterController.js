@@ -14,14 +14,14 @@ export class RouterController {
   }
 
   init() {
-    const initialRoute = this.routerModel.parseHash(window.location.hash);
-    this.routerModel.setRoute(initialRoute.view, initialRoute.articleId);
-    this.applyRoute(initialRoute);
+    const route = this.routerModel.parseHash(window.location.hash);
+    this.routerModel.setRoute(route.view, route.articleId);
+    this.applyRoute(route);
 
     window.addEventListener("hashchange", () => {
-      const route = this.routerModel.parseHash(window.location.hash);
-      this.routerModel.setRoute(route.view, route.articleId);
-      this.applyRoute(route);
+      const newRoute = this.routerModel.parseHash(window.location.hash);
+      this.routerModel.setRoute(newRoute.view, newRoute.articleId);
+      this.applyRoute(newRoute);
     });
   }
 
@@ -43,11 +43,12 @@ export class RouterController {
 
     if (route.view === "detail" && route.articleId) {
       const article = this.articleModel.getById(route.articleId);
+
       if (!article) {
-        this.articleDetailView.hide();
-        this.articleListView.show();
+        this.navigateToList();
         return;
       }
+
       this.articleListView.hide();
       this.articleDetailView.render(article);
       this.articleDetailView.show();

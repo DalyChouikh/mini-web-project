@@ -1,4 +1,4 @@
-const STORAGE_KEY = "mini-blog-theme";
+const STORAGE_KEY = "blog-theme";
 
 export class ThemeModel {
   getTheme() {
@@ -8,12 +8,11 @@ export class ThemeModel {
         return stored;
       }
     } catch (error) {}
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
+
+    if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
       return "dark";
     }
+
     return "light";
   }
 
@@ -23,7 +22,7 @@ export class ThemeModel {
     } catch (error) {}
   }
 
-  toggleTheme(currentTheme) {
-    return currentTheme === "dark" ? "light" : "dark";
+  toggleTheme(current) {
+    return current === "dark" ? "light" : "dark";
   }
 }
