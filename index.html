@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimalist Interactive Blog</title>
+    <link rel="stylesheet" href="./styles/base.css" />
+    <link rel="stylesheet" href="./styles/layout.css" />
+    <link rel="stylesheet" href="./styles/components.css" />
+    <link rel="stylesheet" href="./styles/themes.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <h1 class="brand-title">Minimalist Interactive Blog</h1>
+        <p class="brand-subtitle">Clean articles for focused students</p>
+      </div>
+      <div class="header-actions">
+        <label class="search-label" for="search-input">Search</label>
+        <input
+          type="search"
+          id="search-input"
+          class="search-input"
+          placeholder="Search articles..."
+          autocomplete="off"
+        />
+        <button id="theme-toggle" class="icon-button" aria-label="Toggle dark mode"></button>
+      </div>
+    </header>
+
+    <div id="scroll-indicator" class="scroll-indicator">
+      <span class="scroll-indicator-bar"></span>
+    </div>
+
+    <main id="app" class="app">
+      <section id="list-view" class="view view-list" aria-label="Article list">
+        <div id="article-list" class="article-list"></div>
+      </section>
+
+      <section id="detail-view" class="view view-detail" aria-label="Article detail" hidden>
+        <button id="back-to-list" class="back-button">← Back to list</button>
+        <div id="article-detail" class="article-detail"></div>
+        <section id="comments-section" class="comments-section" aria-label="Comments"></section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" aria-live="polite" hidden></div>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
